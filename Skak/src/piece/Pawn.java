@@ -8,7 +8,7 @@ public class Pawn extends Piece{
 	private static int value = 1;
 	Collection<Point> legalMoves;
 
-	public Pawn(Color color, int value) {
+	public Pawn(Color color) {
 		super(Type.Pawn, color, value);
 		legalMoves = new ArrayList<>();
 		// TODO Auto-generated constructor stub
