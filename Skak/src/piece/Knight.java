@@ -1,17 +1,20 @@
 package piece;
 
 import java.util.ArrayList;
+
+import data.Values;
+
 import java.awt.Point;
 
 public class Knight extends Piece {
 	
-	private static int value = 3;
+	private static int value = Values.KNIGHT;
 	ArrayList<Point> legalMoves;
 	
 	
 	
-	public Knight(Color color) {
-		super(Type.Knight, color, value);
+	public Knight(Color color, Point coordinates) {
+		super(Type.Knight, color, value, coordinates);
 		legalMoves = new ArrayList<>();
 		// TODO Auto-generated constructor stub
 	}
