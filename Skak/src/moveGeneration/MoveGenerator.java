@@ -14,10 +14,10 @@ import piece.King;
 import piece.Move;
 
 public class MoveGenerator {
-	private ArrayList<Move> bestMoveLastRound; // The best move last round might be good again
-	private ArrayList<Move> offensiveMoves; // Usually taking a piece is quite good
-	private ArrayList<Move> officerMoves; // Movement of officers. (Queen, rook, bishob, knight)
-	private ArrayList<Move> pawnMoves; // The pawn movements.
+	private ArrayList<Board> bestMoveLastRound; // The best move last round might be good again
+	private ArrayList<Board> offensiveMoves; // Usually taking a piece is quite good
+	private ArrayList<Board> officerMoves; // Movement of officers. (Queen, rook, bishob, knight)
+	private ArrayList<Board> pawnMoves; // The pawn movements.
 
 	// Shit to know about.
 	private boolean kingIncheck;
@@ -150,7 +150,9 @@ public class MoveGenerator {
 			if (2 < newCoords.getY() && newCoords.getY() < 7) {
 				newMove.addAdditionalPoints(Values.CENTERPAWN);
 			}
-
+			
+			//TODO pawn evolution
+			
 			pawnMoves.add(newMove);
 
 			// No need to execute more code, since the move already has been added to the

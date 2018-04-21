@@ -4,22 +4,83 @@ import java.awt.Point;
 import java.util.ArrayList;
 
 import interfaces.IBoard;
-import interfaces.IField;
 import interfaces.IPiece;
 import interfaces.IPiece.Color;
 import interfaces.IPiece.Type;
+import piece.Move;
 
 public class Board implements IBoard {
 	
-	IField[][] chessBoard;
-	ArrayList<IBoard> childBoards = new ArrayList<>();
+	private IPiece[][] chessBoard;
+	private ArrayList<IBoard> childBoards = new ArrayList<>();
+	private int additionalPoints = 0;
+	private Point enPassant = null;
+	
+	private boolean whiteLongCastle = true;
+	private boolean whiteShortCastle = true;
+	private boolean blackLongCastle = true;
+	private boolean blackShortCastle = true;
+	
 
 	
 	
 	
 	public Board() {
-		chessBoard = new IField[8][8];
+		chessBoard = new IPiece[8][8];
+	}
+	
+	public Board(Board oldBoard, Move newMove) {
+		this.chessBoard = oldBoard.chessBoard;
+		this.additionalPoints += newMove.getAdditionalPoints();
+		switch(newMove.getMovingPiece().getType()) {
+		case Bishop:
+			setPieceNull(newMove.getStartCoor());
+			newMove.getMovingPiece().setCoordinates(newMove.getEndCoor());
+			setPiece(newMove.getEndCoor(), newMove.getMovingPiece());
+			break;
+			
+		case King:
+			setPieceNull(newMove.getStartCoor());
+			newMove.getMovingPiece().setCoordinates(newMove.getEndCoor());
+			setPiece(newMove.getEndCoor(), newMove.getMovingPiece());
+			switch(newMove.getMovingPiece().getColor()) {
+			case BLACK:
+				blackLongCastle = false;
+				blackShortCastle = false;
+				break;
+			case WHITE:
+				whiteLongCastle = false;
+				whiteShortCastle = false;
+				break;
+			default:
+				break;
+			
+			}
+			break;
+			
+		case Knight:
+			setPieceNull(newMove.getStartCoor());
+			newMove.getMovingPiece().setCoordinates(newMove.getEndCoor());
+			setPiece(newMove.getEndCoor(), newMove.getMovingPiece());
+			break;
+			
+		case Pawn:
+			setPieceNull(newMove.getStartCoor());
+			newMove.getMovingPiece().setCoordinates(newMove.getEndCoor());
+			setPiece(newMove.getEndCoor(), newMove.getMovingPiece());
+			if(newMove.isSpecial()) {
+				
+				//TODO en passant thingy
+			}
+			break;
+		case Queen:
+			break;
+		case Rook:
+			break;
+		default:
+			break;
 		
+		}
 		
 	}
 	
@@ -81,13 +142,19 @@ public class Board implements IBoard {
 
 	@Override
 	public IPiece getPiece(Point p) {
-		return chessBoard[((int) p.getX())-1][((int)p.getY())-1].getPiece();
+		return chessBoard[((int) p.getX())-1][((int)p.getY())-1];
 	}
 	
 	@Override
-	public IField getField(Point p) {
-		return chessBoard[((int) p.getX())-1][((int)p.getY())-1];
+	public void setPieceNull(Point p)  {
+		chessBoard[((int) p.getX())-1][((int)p.getY())-1] = null;
 	}
+	
+	@Override
+	public void setPiece(Point p, IPiece piece) {
+		chessBoard[((int) p.getX())-1][((int)p.getY())-1] = piece;
+	}
+	
 	
 	
 	//Sets the field 

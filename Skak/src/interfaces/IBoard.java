@@ -19,8 +19,9 @@ public interface IBoard {
 	
 	
 	IPiece getPiece(Point p);
-	IField getField(Point p);
 	void setFieldEnPassant(Point p, Color color);
+	void setPieceNull(Point p);
+	void setPiece(Point p, IPiece piece);
 	
 	
 	
