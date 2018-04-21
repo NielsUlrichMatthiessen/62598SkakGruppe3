@@ -3,8 +3,6 @@ package interfaces;
 import java.awt.Point;
 import java.util.ArrayList;
 
-import interfaces.IPiece.Color;
-
 
 public interface IBoard {
 
@@ -19,9 +17,10 @@ public interface IBoard {
 	
 	
 	IPiece getPiece(Point p);
-	void setFieldEnPassant(Point p, Color color);
 	void setPieceNull(Point p);
 	void setPiece(Point p, IPiece piece);
+	Point getEnPassant();
+	void setEnPassant(Point enPassant);
 	
 	
 	

@@ -10,14 +10,20 @@ import interfaces.IBoard;
 import interfaces.IData;
 import interfaces.IPiece;
 import interfaces.IPiece.Color;
+import piece.Bishop;
 import piece.King;
+import piece.Knight;
 import piece.Move;
+import piece.Piece;
+import piece.Queen;
+import piece.Rook;
 
 public class MoveGenerator {
-	private ArrayList<Board> bestMoveLastRound; // The best move last round might be good again
-	private ArrayList<Board> offensiveMoves; // Usually taking a piece is quite good
-	private ArrayList<Board> officerMoves; // Movement of officers. (Queen, rook, bishob, knight)
-	private ArrayList<Board> pawnMoves; // The pawn movements.
+	private ArrayList<Move> bestMoveLastRound; // The best move last round might be good again
+	private ArrayList<Move> betterThanAvarage;	//For moves better than avarage. Another way to sort stuff. Pawn promotion, castle. Stuff like that. 
+	private ArrayList<Move> offensiveMoves; // Usually taking a piece is quite good
+	private ArrayList<Move> officerMoves; // Movement of officers. (Queen, rook, bishob, knight)
+	private ArrayList<Move> pawnMoves; // The pawn movements.
 
 	// Shit to know about.
 	private boolean kingIncheck;
@@ -52,7 +58,7 @@ public class MoveGenerator {
 				Point direction = null; // Direction piece is moving in.
 				Point newDirection; // The new direction the piece is moving in. Might be the same as the old one.
 				boolean sameDirectionPossible = true; // True if it's possible for the piece to go further in that
-														// direction.
+				// direction.
 				ArrayList<Point> pieceMoves = piece.getLegalMoves();
 				Point newCoords; // The coordinates after the move.
 				for (Point p : pieceMoves) {
@@ -80,9 +86,7 @@ public class MoveGenerator {
 					if (!boardState.outOfBounds(newCoords)) {
 						if (!(boardState.allyPiecePresent(newCoords))) {
 
-							Move newMove = new Move();
-							newMove.setStartCoor(p);
-							newMove.setEndCoor(newCoords);
+							Move newMove = new Move(piece,p,newCoords);
 							newMove.setOffensive(boardState.enemyPiecePresent(newCoords));
 
 							// Pawn moves:
@@ -140,19 +144,39 @@ public class MoveGenerator {
 				// If there is an enemy piece there, the move is not valid.
 				return;
 			}
-			
-			//If the pawn is moving 2 fields forward, en passant is possible.
-			if (diff.getY() == 2 || diff.getY() == -2) {
-				boardState.setFieldEnPassant(newCoords, piece.getColor());
-			}
+
 			
 			// Add extra points if it is or is becoming a center pawn.
 			if (2 < newCoords.getY() && newCoords.getY() < 7) {
 				newMove.addAdditionalPoints(Values.CENTERPAWN);
 			}
-			
-			//TODO pawn evolution
-			
+
+			// Promotion
+			if (newMove.getEndCoor().getY() == 8) {
+				IPiece queen = new Queen(newMove.getMovingPiece().getColor(), newMove.getEndCoor());
+				IPiece bishop = new Bishop(newMove.getMovingPiece().getColor(), newMove.getEndCoor());
+				IPiece knight = new Knight(newMove.getMovingPiece().getColor(), newMove.getEndCoor());
+				IPiece rook = new Rook(newMove.getMovingPiece().getColor(), newMove.getEndCoor());
+
+				Move queenMove = new Move(queen, newMove.getStartCoor(), newMove.getEndCoor());
+				Move bishopMove = new Move(bishop, newMove.getStartCoor(), newMove.getEndCoor());
+				Move knightMove = new Move(knight, newMove.getStartCoor(), newMove.getEndCoor());
+				Move rookMove = new Move(rook, newMove.getStartCoor(), newMove.getEndCoor());
+				
+				queenMove.setSpecial(true);
+				bishopMove.setSpecial(true);
+				knightMove.setSpecial(true);
+				rookMove.setSpecial(true);
+				
+				betterThanAvarage.add(queenMove);
+				betterThanAvarage.add(bishopMove);
+				betterThanAvarage.add(knightMove);
+				betterThanAvarage.add(rookMove);
+				
+				
+
+			}
+
 			pawnMoves.add(newMove);
 
 			// No need to execute more code, since the move already has been added to the
@@ -178,7 +202,7 @@ public class MoveGenerator {
 					// If it's in the correct row.
 					if (piece.getCoordinates().getX() == 5) {
 						// Has a pawn recently moved over this field?
-						if (boardState.getField(newCoords).isEnPassant()) {
+						if (boardState.getEnPassant().equals(newCoords)) {
 							newMove.setSpecial(true);
 							pawnMoves.add(newMove);
 						}
@@ -189,7 +213,7 @@ public class MoveGenerator {
 					// If it's in the correct row.
 					if (piece.getCoordinates().getX() == 4) {
 						// Has a pawn recently moved over this field?
-						if (boardState.getField(newCoords).isEnPassant()) {
+						if (boardState.getEnPassant().equals(newCoords)) {
 							newMove.setSpecial(true);
 							pawnMoves.add(newMove);
 						}
