@@ -1,21 +1,25 @@
 package piece;
 
 import java.util.*;
+
+import data.Values;
+
 import java.awt.Point;
 
 public class Queen extends Piece {
 	
-	private static int value = 9;
-	Collection<Point> legalMoves;
+	private static int value = Values.QUEEN;
+	ArrayList<Point> legalMoves;
 	
 	
-	public Queen(Color color) {
-		super(Type.Queen, value);
+	public Queen(Color color, Point coordinates) {
+		super(Type.Queen, color, value, coordinates);
 		legalMoves = new ArrayList<>();
 
 	}
 	
-	public Collection<Point> getLegalMoves() {
+	@Override
+	public ArrayList<Point> getLegalMoves() {
 		
 		//Taarn bevægelser
 		//op

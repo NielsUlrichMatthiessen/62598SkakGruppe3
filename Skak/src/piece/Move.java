@@ -6,11 +6,11 @@ public class Move {
 	
 	
 	private Piece movingPiece;				//The actual moving piece.
-	private Point startCoor;					//Where it comes from
+	private Point startCoor;				//Where it comes from
 	private Point endCoor;					//Where it will go
 	private boolean offensive;				//Taking a piece
-	private int additionalPoints;			//Add extra points to the move. Ie. Move to a spot that another piece covers
-	
+	private int additionalPoints = 0;		//Add extra points to the move. Ie. Move to a spot that another piece covers
+	private boolean special = false;		//For en passant and pawn evolution.
 	
 	
 	
@@ -27,7 +27,7 @@ public class Move {
 	public Piece getMovingPiece() {
 		return movingPiece;
 	}
-	public void setMovingPiece(Piece movingPiece) {
+	public void addMovingPiece(Piece movingPiece) {
 		this.movingPiece = movingPiece;
 	}
 	public Point getStartCoor() {
@@ -51,8 +51,14 @@ public class Move {
 	public int getAdditionalPoints() {
 		return additionalPoints;
 	}
-	public void setAdditionalPoints(int additionalPoints) {
-		this.additionalPoints = additionalPoints;
+	public void addAdditionalPoints(int additionalPoints) {
+		this.additionalPoints += additionalPoints;
+	}
+	public boolean isSpecial() {
+		return special;
+	}
+	public void setSpecial(boolean special) {
+		this.special = special;
 	}
 	
 	

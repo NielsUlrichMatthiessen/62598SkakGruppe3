@@ -1,17 +1,23 @@
 package piece;
 
 import java.util.ArrayList;
+
+import data.Values;
+
 import java.awt.Point;
 
 public class King extends Piece {
 	
 	private boolean check;		//King checked (I skak)
-	private static int value = Integer.MAX_VALUE;
-	Collection<Point> legalMoves;
+	private static int value = Values.KING;
+	private boolean kingMoved = false;
 	
 	
-	public King(Color color) {
-		super(Type.King, color, value);
+	ArrayList<Point> legalMoves;
+	
+	
+	public King(Color color, Point coordinates) {
+		super(Type.King, color, value, coordinates);
 		legalMoves = new ArrayList<>();	
 	}
 
@@ -23,7 +29,8 @@ public class King extends Piece {
 		this.check = check;
 	}
 	
-	 public Collection<Point> getLegalMoves() {
+	@Override
+	 public ArrayList<Point> getLegalMoves() {
 		 //mangler rokade
 		 
 		 legalMoves.add(new Point(+1, 0));
@@ -37,6 +44,8 @@ public class King extends Piece {
 		 
 		 return legalMoves;
         }
+
+
 
 	
 	

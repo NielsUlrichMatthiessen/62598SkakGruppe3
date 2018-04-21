@@ -1,21 +1,24 @@
 package piece;
 
-import java.util.ArrayList;
 import java.awt.Point;
+import java.util.ArrayList;
+
+import data.Values;
 
 public class Bishop extends Piece {
 	
-	private static int value = 3;
-	Collection<Point> legalMoves;
+	private static int value = Values.BISHOP;
+	ArrayList<Point> legalMoves;
 	
-	public Bishop(Color color) {
+	public Bishop(Color color, Point coordinates) {
 		
-		super(Type.Bishop,color, value);
+		super(Type.Bishop,color, value, coordinates);
 		legalMoves = new ArrayList<>();
 		// TODO Auto-generated constructor stub
 	}
 	
-	public Collection<Point> getLegalMoves() {
+	@Override
+	public ArrayList<Point> getLegalMoves() {
 		
 		//diagonalt op positiv retning
 		for (int i = 1; i < 8; i++) {
@@ -39,5 +42,7 @@ public class Bishop extends Piece {
 		
 		return legalMoves;
 	}
+
+	
 
 }

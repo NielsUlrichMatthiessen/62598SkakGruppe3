@@ -1,21 +1,25 @@
 package piece;
 
 import java.util.ArrayList;
+
+import data.Values;
+
 import java.awt.Point;
 
 public class Rook extends Piece {
 	
-	private static int value = 5;
-	Collection<Point> legalMoves;
+	private static int value = Values.ROOK;
+	ArrayList<Point> legalMoves;
 	
-	public Rook(Color color) {
+	public Rook(Color color, Point coordinates) {
 		
-		super(Type.Rook, color, value);
+		super(Type.Rook, color, value, coordinates);
 		legalMoves = new ArrayList<>();
 
 	}
 	
-	 public Collection<Point> getLegalMoves() {
+	@Override
+	 public ArrayList<Point> getLegalMoves() {
 		 //mangler rokade
 		 
 		 //op
