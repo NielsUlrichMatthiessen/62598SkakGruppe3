@@ -7,7 +7,10 @@ public class King extends Piece {
 	
 	private boolean check;		//King checked (I skak)
 	private static int value = Integer.MAX_VALUE;
-	Collection<Point> legalMoves;
+	private boolean kingMoved = false;
+	
+	
+	ArrayList<Point> legalMoves;
 	
 	
 	public King(Color color) {
@@ -23,7 +26,8 @@ public class King extends Piece {
 		this.check = check;
 	}
 	
-	 public Collection<Point> getLegalMoves() {
+	@Override
+	 public ArrayList<Point> getLegalMoves() {
 		 //mangler rokade
 		 
 		 legalMoves.add(new Point(+1, 0));
@@ -37,6 +41,8 @@ public class King extends Piece {
 		 
 		 return legalMoves;
         }
+
+
 
 	
 	

@@ -6,7 +6,7 @@ import java.awt.Point;
 public class Rook extends Piece {
 	
 	private static int value = 5;
-	Collection<Point> legalMoves;
+	ArrayList<Point> legalMoves;
 	
 	public Rook(Color color) {
 		
@@ -15,7 +15,8 @@ public class Rook extends Piece {
 
 	}
 	
-	 public Collection<Point> getLegalMoves() {
+	@Override
+	 public ArrayList<Point> getLegalMoves() {
 		 //mangler rokade
 		 
 		 //op

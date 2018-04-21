@@ -6,7 +6,7 @@ import java.awt.Point;
 public class Knight extends Piece {
 	
 	private static int value = 3;
-	Collection<Point> legalMoves;
+	ArrayList<Point> legalMoves;
 	
 	
 	
@@ -16,7 +16,8 @@ public class Knight extends Piece {
 		// TODO Auto-generated constructor stub
 	}
 	
-	 public Collection<Point> getLegalMoves() {
+	@Override
+	public ArrayList<Point> getLegalMoves() {
 		 
 		 legalMoves.add(new Point(-2, +1));
 		 legalMoves.add(new Point(-1, +2));

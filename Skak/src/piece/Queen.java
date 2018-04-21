@@ -6,16 +6,17 @@ import java.awt.Point;
 public class Queen extends Piece {
 	
 	private static int value = 9;
-	Collection<Point> legalMoves;
+	ArrayList<Point> legalMoves;
 	
 	
 	public Queen(Color color) {
-		super(Type.Queen, value);
+		super(Type.Queen, color, value);
 		legalMoves = new ArrayList<>();
 
 	}
 	
-	public Collection<Point> getLegalMoves() {
+	@Override
+	public ArrayList<Point> getLegalMoves() {
 		
 		//Taarn bevægelser
 		//op

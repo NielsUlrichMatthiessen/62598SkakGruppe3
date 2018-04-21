@@ -38,6 +38,6 @@ public abstract class Piece implements IPiece {
 		return value;
 	}
 	
-	abstract public Collection<Point> getLegalMoves();
+	abstract public ArrayList<Point> getLegalMoves();
 	
 }

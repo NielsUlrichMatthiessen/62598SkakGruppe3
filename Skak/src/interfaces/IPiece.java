@@ -1,5 +1,6 @@
 package interfaces;
 
+import java.awt.Point;
 import java.util.ArrayList;
 
 import piece.Move;
@@ -15,6 +16,6 @@ public interface IPiece {
 	 * Returns the legal moves of a piece
 	 * @return	Arraylist of moves
 	 */
-	ArrayList<Move> getMoves();
+	ArrayList<Point> getLegalMoves();
 	
 }
