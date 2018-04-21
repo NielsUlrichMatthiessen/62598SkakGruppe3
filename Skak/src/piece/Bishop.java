@@ -1,7 +1,6 @@
 package piece;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.awt.Point;
 
 public class Bishop extends Piece {
