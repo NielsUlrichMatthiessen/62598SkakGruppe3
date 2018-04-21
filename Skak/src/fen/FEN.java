@@ -1,5 +1,11 @@
 package fen;
 
+import data.Board;
+import interfaces.IPiece;
+import interfaces.IPiece.Type;
+import piece.*;
+
+import java.awt.*;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -10,7 +16,7 @@ public class FEN {
 
     private static final String FILE_PATH = "FENlog.txt";
 
-    public static void decode(String FEN) throws InvalidFENStringException
+    public static Board decode(String FEN) throws InvalidFENStringException
     {
         String[] parts = FEN.split(" ");
         String piecePlacements[] = parts[0].split("/");
@@ -19,14 +25,22 @@ public class FEN {
         String enPassant = parts[3];
         String halfmoveClock = parts[4];
         String fillmoveNumber = parts[5];
+        Board board = new Board();
+        IPiece piece = null;
         String result = "";
-        for(int y = 0 ; y<8 ; y++ )
+        ////////////////////////////////////////////////////////////
+        ///////
+        /////// Here we determine the piece-placement
+        ///////
+        ////////////////////////////////////////////////////////////
+        for(int y = 7 ; y>=0 ; y-- )
         {
             String row = piecePlacements[y];
             String rowResult = "";
-            for(int x = 0 ;x <row.length() ; x++)
+            int x = 0;
+            for(int rowStr = 0 ;rowStr <row.length() ; rowStr++)
             {
-                char p = row.charAt(x);
+                char p = row.charAt(rowStr);
                 if(p >= '0' && p<= '9')
                 {
                     int emptyCells = (int)(p-'0');
@@ -34,10 +48,55 @@ public class FEN {
                     {
                         rowResult += " ";
                     }
+                    x += emptyCells;
                 }
                 else
                 {
                     rowResult += p;
+
+                    Point point = new Point(x,y);
+                    switch(p)
+                    {
+                        case 'p':
+                            piece = new Pawn(IPiece.Color.BLACK , point);
+                            break;
+                        case 'P':
+                            piece = new Pawn(IPiece.Color.WHITE , point);
+                            break;
+                        case 'n':
+                            piece = new Knight(IPiece.Color.BLACK , point);
+                            break;
+                        case 'N':
+                            piece = new Knight(IPiece.Color.WHITE , point);
+                            break;
+                        case 'b':
+                            piece = new Bishop(IPiece.Color.BLACK , point);
+                            break;
+                        case 'B':
+                            piece = new Bishop(IPiece.Color.WHITE , point);
+                            break;
+                        case 'r':
+                            piece = new Rook(IPiece.Color.BLACK , point);
+                            break;
+                        case 'R':
+                            piece = new Rook(IPiece.Color.WHITE , point);
+                            break;
+                        case 'q':
+                            piece = new Queen(IPiece.Color.BLACK , point);
+                            break;
+                        case 'Q':
+                            piece = new Queen(IPiece.Color.WHITE , point);
+                            break;
+                        case 'k':
+                            piece = new King(IPiece.Color.BLACK , point);
+                            break;
+                        case 'K':
+                            piece = new King(IPiece.Color.WHITE , point);
+                            break;
+                    }
+                    board.setPiece(point , piece);
+                    x++;
+
                 }
 
             }
@@ -45,6 +104,11 @@ public class FEN {
                 throw new InvalidFENStringException("Invalid piece placement:\""+row+"\"\nfen.FEN STRING:\""+FEN+"\"");
             result+=rowResult+"\n";
         }
+        ////////////////////////////////////////////////////////////
+        ///////
+        /////// Here we determine whose turn it is
+        ///////
+        ////////////////////////////////////////////////////////////
         switch(turn)
         {
 
@@ -58,6 +122,11 @@ public class FEN {
                 throw new InvalidFENStringException("Invalid active player character:\""+turn+"\"\nfen.FEN STRING:\""+FEN+"\"");
         }
 
+        ////////////////////////////////////////////////////////////
+        ///////
+        /////// here we determine castling
+        ///////
+        ////////////////////////////////////////////////////////////
         if(castling.equals("-"))
             result += "neither side can castle\n";
         else
@@ -84,6 +153,11 @@ public class FEN {
             }
         }
 
+        ////////////////////////////////////////////////////////////
+        ///////
+        ///////  Here we determine en passant squares
+        ///////
+        ////////////////////////////////////////////////////////////
         if(enPassant.equals("-"))
         {
             result += "None en passant squares\n";
@@ -100,13 +174,83 @@ public class FEN {
             }
 
         }
-        System.out.println(result);
 
+        ////////////////////////////////////////////////////////////
+        ///////
+        ///////  So far we haven't implemented the timers
+        ///////
+        ////////////////////////////////////////////////////////////
+        System.out.println(result);
+        return board;
     }
 
-    public static String encode()
+    public static String encode(Board board)
     {
-        return "";
+        String finalResult = "";
+        String[] boardString = new String[8];
+        String playerturn = "";
+        String castling = "";
+        String enPassant = "";
+        String halfmoveclock = "0";
+        String fullmovenumber  = "";
+        for(int y = 7 ; y>=0 ; y--)
+        {
+            String row = "";
+            int emptyFields = 0;
+            for(int x = 0 ; x<8 ; x++)
+            {
+                IPiece piece = board.getPiece(new Point(x,y));
+                if(piece == null)
+                {
+                    emptyFields++;
+                    if(x == 7)
+                    {
+                        row += emptyFields;
+                    }
+                }
+                else
+                {
+                    if(emptyFields != 0)
+                    {
+                        row += emptyFields;
+                        emptyFields = 0;
+                    }
+                    String pieceStr = "";
+                    switch (piece.getType())
+                    {
+                        case Pawn:
+                            pieceStr = "p";
+                            break;
+                        case Rook:
+                            pieceStr = "r";
+                            break;
+                        case Knight:
+                            pieceStr = "n";
+                            break;
+                        case Bishop:
+                            pieceStr = "b";
+                            break;
+                        case Queen:
+                            pieceStr = "q";
+                            break;
+                        case King:
+                            pieceStr = "k";
+                            break;
+                    }
+                    if(piece.getColor() == IPiece.Color.WHITE)
+                    {
+                        pieceStr = pieceStr.toUpperCase();
+                    }
+                    row += pieceStr;
+                }
+            }
+            row += y == 0 ? "": "/";
+        }
+
+
+
+        System.out.println(finalResult);
+        return finalResult;
     }
 
     public static void saveToFile(String FEN)
