@@ -54,7 +54,7 @@ public class FEN {
                 {
                     rowResult += p;
 
-                    Point point = new Point(x,y);
+                    Point point = new Point(x+1,y+1);
                     switch(p)
                     {
                         case 'p':
@@ -95,6 +95,7 @@ public class FEN {
                             break;
                     }
                     board.setPiece(point , piece);
+
                     x++;
 
                 }
@@ -114,9 +115,11 @@ public class FEN {
 
             case "w":
                 result += "White player's turn\n";
+                board.setTurn(IPiece.Color.WHITE);
                 break;
             case "b":
                 result += "Black player's turn\n";
+                board.setTurn(IPiece.Color.BLACK);
                 break;
             default:
                 throw new InvalidFENStringException("Invalid active player character:\""+turn+"\"\nfen.FEN STRING:\""+FEN+"\"");
@@ -127,6 +130,10 @@ public class FEN {
         /////// here we determine castling
         ///////
         ////////////////////////////////////////////////////////////
+        board.setWhiteShortCastle(false);
+        board.setWhiteLongCastle(false);
+        board.setBlackLongCastle(false);
+        board.setBlackShortCastle(false);
         if(castling.equals("-"))
             result += "neither side can castle\n";
         else
@@ -137,15 +144,19 @@ public class FEN {
                 {
                     case 'K':
                         result += "White can castle kingside\n";
+                        board.setWhiteShortCastle(true);
                         break;
                     case 'Q':
                         result += "White can castle queenside\n";
+                        board.setWhiteLongCastle(true);
                         break;
                     case 'k':
                         result += "Black can castle kingside\n";
+                        board.setBlackShortCastle(true);
                         break;
                     case 'q':
                         result += "Black can castle queenside\n";
+                        board.setBlackLongCastle(true);
                         break;
                     default:
                         throw new InvalidFENStringException("Invalid castling character:\""+castling+"\"\nfen.FEN STRING:\""+FEN+"\"");
@@ -171,13 +182,14 @@ public class FEN {
                 int column = (int)(enPassant.charAt(0)-'a');
                 int row = (int)(enPassant.charAt(1)-'0');
                 result += "En passant square(Column,Row) :(" + column+","+row+") or "+enPassant;
+                board.setEnPassant(new Point(column , row));
             }
 
         }
 
         ////////////////////////////////////////////////////////////
         ///////
-        ///////  So far we haven't implemented the timers
+        ///////  So far we haven't implemented the clocks
         ///////
         ////////////////////////////////////////////////////////////
         System.out.println(result);
@@ -192,14 +204,19 @@ public class FEN {
         String castling = "";
         String enPassant = "";
         String halfmoveclock = "0";
-        String fullmovenumber  = "";
+        String fullmovenumber  = "0";
+        ////////////////////////////////////////////////////////////
+        ///////
+        ///////  Create board string
+        ///////
+        ////////////////////////////////////////////////////////////
         for(int y = 7 ; y>=0 ; y--)
         {
             String row = "";
             int emptyFields = 0;
             for(int x = 0 ; x<8 ; x++)
             {
-                IPiece piece = board.getPiece(new Point(x,y));
+                IPiece piece = board.getPiece(new Point(x+1,y+1));
                 if(piece == null)
                 {
                     emptyFields++;
@@ -244,9 +261,76 @@ public class FEN {
                     row += pieceStr;
                 }
             }
-            row += y == 0 ? "": "/";
+            row += y == 7 ? "": "/";
+            boardString[y] = row;
         }
 
+        ////////////////////////////////////////////////////////////
+        ///////
+        ///////  Create player turn string
+        ///////
+        ////////////////////////////////////////////////////////////
+        switch (board.getTurn())
+        {
+            case BLACK:
+                playerturn = "b";
+                break;
+            case WHITE:
+                playerturn = "w";
+                break;
+        }
+
+        ////////////////////////////////////////////////////////////
+        ///////
+        ///////  Create en passsant square string
+        ///////
+        ////////////////////////////////////////////////////////////
+        if(board.getEnPassant() != null)
+        {
+            char col = (char)(board.getEnPassant().x+'a');
+            enPassant = ""+col+board.getEnPassant().y;
+        }
+        else
+        {
+            enPassant = "-";
+        }
+
+        ////////////////////////////////////////////////////////////
+        ///////
+        ///////  Create castling string
+        ///////
+        ////////////////////////////////////////////////////////////
+
+        boolean hasCastling = false;
+        if(board.isWhiteShortCastle())
+        {
+            castling += "K";
+            hasCastling = true;
+        }
+        if(board.isWhiteLongCastle())
+        {
+            castling += "Q";
+            hasCastling = true;
+        }
+        if(board.isBlackShortCastle())
+        {
+            castling += "k";
+            hasCastling = true;
+        }
+        if(board.isBlackLongCastle())
+        {
+            castling += "q";
+            hasCastling = true;
+        }
+        if(!hasCastling)
+        {
+            castling = "-";
+        }
+        for(String r : boardString)
+        {
+            finalResult += r;
+        }
+        finalResult += " " + playerturn + " "+castling+" "+enPassant+" "+halfmoveclock+" "+fullmovenumber;
 
 
         System.out.println(finalResult);
@@ -269,12 +353,13 @@ public class FEN {
 
     }
 
+    //Til at teste
     public static void main(String args[])
     {
-        String fen = "rnbqkbnr/pp2pppp/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR w KQkq c6 0 2";
+        String fen = "rnbq1bnr/pp2pppp/8/2p5/4P3/8/P1PP1PPP/RNBQKBNR w kq c6 0 2";
         try {
-            decode(fen);
-            saveToFile(fen);
+            Board b = decode(fen);
+            encode(b);
         } catch (InvalidFENStringException e) {
             e.printStackTrace();
         }
