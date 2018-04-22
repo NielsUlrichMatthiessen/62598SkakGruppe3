@@ -3,24 +3,24 @@ package moveGeneration;
 import java.awt.Point;
 import java.util.ArrayList;
 
-import data.Board;
 import data.Data;
 import data.Values;
 import interfaces.IBoard;
 import interfaces.IData;
 import interfaces.IPiece;
 import interfaces.IPiece.Color;
+import interfaces.IPiece.Type;
 import piece.Bishop;
 import piece.King;
 import piece.Knight;
 import piece.Move;
-import piece.Piece;
 import piece.Queen;
 import piece.Rook;
 
 public class MoveGenerator {
 	private ArrayList<Move> bestMoveLastRound; // The best move last round might be good again
-	private ArrayList<Move> betterThanAvarage;	//For moves better than avarage. Another way to sort stuff. Pawn promotion, castle. Stuff like that. 
+	private ArrayList<Move> betterThanAvarage; // For moves better than avarage. Another way to sort stuff. Pawn
+	// promotion, castle. Stuff like that.
 	private ArrayList<Move> offensiveMoves; // Usually taking a piece is quite good
 	private ArrayList<Move> officerMoves; // Movement of officers. (Queen, rook, bishob, knight)
 	private ArrayList<Move> pawnMoves; // The pawn movements.
@@ -28,7 +28,6 @@ public class MoveGenerator {
 	// Shit to know about.
 	private boolean kingIncheck;
 	private IBoard boardState;
-	private IBoard newBoardState;
 
 	IData data = new Data();
 
@@ -37,7 +36,6 @@ public class MoveGenerator {
 	 */
 	public MoveGenerator(IBoard boardState) {
 		this.boardState = boardState;
-		newBoardState = new Board();
 	}
 
 	/**
@@ -84,26 +82,109 @@ public class MoveGenerator {
 
 					// If the move is valid.
 					if (!boardState.outOfBounds(newCoords)) {
-						if (!(boardState.allyPiecePresent(newCoords))) {
+						if (!(boardState.allyPiecePresent(newCoords,piece.getColor()))) {
 
-							Move newMove = new Move(piece,p,newCoords);
-							newMove.setOffensive(boardState.enemyPiecePresent(newCoords));
+							Move newMove = new Move(piece, piece.getCoordinates(), newCoords);
+							newMove.setOffensive(boardState.enemyPiecePresent(newCoords,piece.getColor()));
 
 							// Pawn moves:
 							switch (piece.getType()) {
 							case Bishop:
+								if (newMove.isOffensive()) {
+									// Add extra points if a low value piece takes a higher value piece.
+									if (boardState.getPiece(newCoords).getValue() > piece.getValue()) {
+										newMove.addAdditionalPoints(Values.SMALLTAKEBIG);
+									}
+									offensiveMoves.add(newMove);
+								} else {
+									officerMoves.add(newMove);
+								}
 								break;
 							case King:
+								if (p.getX() > 1) { // Is it trying to castle.
+									// Check path to rook for short castle.
+									Point fieldToCheck = new Point();
+									// We trying to long castle.
+									if (newMove.getStartCoor().getX() > newMove.getEndCoor().getX()) {
+										for (int x = 6; x <= 8; x++) {
+											fieldToCheck.setLocation(x, newMove.getStartCoor().getY());
+											if (boardState.getPiece(fieldToCheck) != null) {
+												//TODO is field threatened by enemy piece Then break
+												if (boardState.getPiece(fieldToCheck).getType().equals(Type.Rook)) {
+													if (!((Rook) boardState.getPiece(fieldToCheck)).isUnmoved()) {
+														break;
+													}
+												} else {
+													break;
+												}
+											}
+
+											((King) newMove.getMovingPiece()).setUnmoved(false);
+											newMove.setSpecial(true);
+											betterThanAvarage.add(newMove);
+										}
+									}
+									// We trying to short castle.
+									else {
+										for (int x = 2; x < 5; x++) {
+											fieldToCheck.setLocation(x, newMove.getStartCoor().getY());
+											if (boardState.getPiece(fieldToCheck) != null) {
+												//TODO is field threatened by enemy piece Then break
+
+												
+												if (boardState.getPiece(fieldToCheck).getType().equals(Type.Rook)) {
+													if (!((Rook) boardState.getPiece(fieldToCheck)).isUnmoved()) {
+														break;
+													}
+												} else {
+													break;
+												}
+											}
+
+											((King) newMove.getMovingPiece()).setUnmoved(false);
+											newMove.setSpecial(true);
+											betterThanAvarage.add(newMove);
+
+										}
+									}
+
+								} else {
+									if (newMove.isOffensive()) {
+										offensiveMoves.add(newMove);
+									} else {
+										officerMoves.add(newMove);
+									}
+								}
 								break;
 							case Knight:
+								if (newMove.isOffensive()) {
+									// Add extra points if a low value piece takes a higher value piece.
+									if (boardState.getPiece(newCoords).getValue() > piece.getValue()) {
+										newMove.addAdditionalPoints(Values.SMALLTAKEBIG);
+									}
+									offensiveMoves.add(newMove);
+								} else {
+									officerMoves.add(newMove);
+								}
 								break;
 							case Pawn: {
 								generatePawnMove(p, piece, newCoords, newMove);
 								break;
 							}
 							case Queen:
+								officerMoves.add(newMove);
 								break;
 							case Rook:
+								((Rook) newMove.getMovingPiece()).setUnmoved(false);
+								if (newMove.isOffensive()) {
+									// Add extra points if a low value piece takes a higher value piece.
+									if (boardState.getPiece(newCoords).getValue() > piece.getValue()) {
+										newMove.addAdditionalPoints(Values.SMALLTAKEBIG);
+									}
+									offensiveMoves.add(newMove);
+								} else {
+									officerMoves.add(newMove);
+								}
 								break;
 							default:
 								break;
@@ -145,7 +226,6 @@ public class MoveGenerator {
 				return;
 			}
 
-			
 			// Add extra points if it is or is becoming a center pawn.
 			if (2 < newCoords.getY() && newCoords.getY() < 7) {
 				newMove.addAdditionalPoints(Values.CENTERPAWN);
@@ -162,18 +242,16 @@ public class MoveGenerator {
 				Move bishopMove = new Move(bishop, newMove.getStartCoor(), newMove.getEndCoor());
 				Move knightMove = new Move(knight, newMove.getStartCoor(), newMove.getEndCoor());
 				Move rookMove = new Move(rook, newMove.getStartCoor(), newMove.getEndCoor());
-				
+
 				queenMove.setSpecial(true);
 				bishopMove.setSpecial(true);
 				knightMove.setSpecial(true);
 				rookMove.setSpecial(true);
-				
+
 				betterThanAvarage.add(queenMove);
 				betterThanAvarage.add(bishopMove);
 				betterThanAvarage.add(knightMove);
 				betterThanAvarage.add(rookMove);
-				
-				
 
 			}
 

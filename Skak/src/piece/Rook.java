@@ -10,6 +10,7 @@ public class Rook extends Piece {
 	
 	private static int value = Values.ROOK;
 	ArrayList<Point> legalMoves;
+	private boolean unmoved = true;
 	
 	public Rook(Color color, Point coordinates) {
 		
@@ -44,5 +45,16 @@ public class Rook extends Piece {
 		 
 		 return legalMoves;
 	 }
+
+	public boolean isUnmoved() {
+		return unmoved;
+	}
+
+	public void setUnmoved(boolean unmoved) {
+		this.unmoved = unmoved;
+	}
+	
+	
+	
 
 }
