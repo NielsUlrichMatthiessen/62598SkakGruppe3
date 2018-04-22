@@ -273,27 +273,28 @@ public class MoveGenerator {
 			} else {
 
 				// If it isn't offensive (no enemy piece there) check for en passant.
+				if (boardState.getEnPassant() != null) {
+					// If the piece is white
+					if (piece.getColor().equals(Color.WHITE)) {
+						// If it's in the correct row.
+						if (piece.getCoordinates().getX() == 5) {
+							// Has a pawn recently moved over this field?
 
-				// If the piece is white
-				if (piece.getColor().equals(Color.WHITE)) {
-					// If it's in the correct row.
-					if (piece.getCoordinates().getX() == 5) {
-						// Has a pawn recently moved over this field?
-
-						if (boardState.getEnPassant() != null && boardState.getEnPassant().equals(newCoords)) {
-							newMove.setSpecial(true);
-							pawnMoves.add(newMove);
+							if (boardState.getEnPassant().equals(newCoords)) {
+								newMove.setSpecial(true);
+								pawnMoves.add(newMove);
+							}
 						}
 					}
-				}
-				// Piece is black.
-				else {
-					// If it's in the correct row.
-					if (piece.getCoordinates().getX() == 4) {
-						// Has a pawn recently moved over this field?
-						if (boardState.getEnPassant() != null && boardState.getEnPassant().equals(newCoords)) {
-							newMove.setSpecial(true);
-							pawnMoves.add(newMove);
+					// Piece is black.
+					else {
+						// If it's in the correct row.
+						if (piece.getCoordinates().getX() == 4) {
+							// Has a pawn recently moved over this field?
+							if (boardState.getEnPassant().equals(newCoords)) {
+								newMove.setSpecial(true);
+								pawnMoves.add(newMove);
+							}
 						}
 					}
 				}
