@@ -82,10 +82,10 @@ public class MoveGenerator {
 
 					// If the move is valid.
 					if (!boardState.outOfBounds(newCoords)) {
-						if (!(boardState.allyPiecePresent(newCoords,piece.getColor()))) {
+						if (!(boardState.allyPiecePresent(newCoords, piece.getColor()))) {
 
 							Move newMove = new Move(piece, piece.getCoordinates(), newCoords);
-							newMove.setOffensive(boardState.enemyPiecePresent(newCoords,piece.getColor()));
+							newMove.setOffensive(boardState.enemyPiecePresent(newCoords, piece.getColor()));
 
 							// Pawn moves:
 							switch (piece.getType()) {
@@ -109,7 +109,7 @@ public class MoveGenerator {
 										for (int x = 6; x <= 8; x++) {
 											fieldToCheck.setLocation(x, newMove.getStartCoor().getY());
 											if (boardState.getPiece(fieldToCheck) != null) {
-												//TODO is field threatened by enemy piece Then break
+												// TODO is field threatened by enemy piece Then break
 												if (boardState.getPiece(fieldToCheck).getType().equals(Type.Rook)) {
 													if (!((Rook) boardState.getPiece(fieldToCheck)).isUnmoved()) {
 														break;
@@ -129,9 +129,8 @@ public class MoveGenerator {
 										for (int x = 2; x < 5; x++) {
 											fieldToCheck.setLocation(x, newMove.getStartCoor().getY());
 											if (boardState.getPiece(fieldToCheck) != null) {
-												//TODO is field threatened by enemy piece Then break
+												// TODO is field threatened by enemy piece Then break
 
-												
 												if (boardState.getPiece(fieldToCheck).getType().equals(Type.Rook)) {
 													if (!((Rook) boardState.getPiece(fieldToCheck)).isUnmoved()) {
 														break;
@@ -280,7 +279,8 @@ public class MoveGenerator {
 					// If it's in the correct row.
 					if (piece.getCoordinates().getX() == 5) {
 						// Has a pawn recently moved over this field?
-						if (boardState.getEnPassant().equals(newCoords)) {
+
+						if (boardState.getEnPassant() != null && boardState.getEnPassant().equals(newCoords)) {
 							newMove.setSpecial(true);
 							pawnMoves.add(newMove);
 						}
@@ -291,7 +291,7 @@ public class MoveGenerator {
 					// If it's in the correct row.
 					if (piece.getCoordinates().getX() == 4) {
 						// Has a pawn recently moved over this field?
-						if (boardState.getEnPassant().equals(newCoords)) {
+						if (boardState.getEnPassant() != null && boardState.getEnPassant().equals(newCoords)) {
 							newMove.setSpecial(true);
 							pawnMoves.add(newMove);
 						}

@@ -229,14 +229,24 @@ public class Board implements IBoard {
 
 	@Override
 	public boolean allyPiecePresent(Point p, Color color) {
-		// TODO Auto-generated method stub
+		if(this.getPiece(p).equals(null)) {
+			return false;
+		}
+		if(this.getPiece(p).getColor().equals(color)) {
+			return true;
+		}
 		return false;
 	}
 
 	@Override
 	public boolean enemyPiecePresent(Point p, Color color) {
-		// TODO Auto-generated method stub
-		return false;
+		if(this.getPiece(p).equals(null)) {
+			return false;
+		}
+		if(this.getPiece(p).getColor().equals(color)) {
+			return false;
+		}
+		return true;
 	}
 
 	@Override
